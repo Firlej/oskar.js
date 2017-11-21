@@ -9,14 +9,13 @@ let windowHeight;
 
 let mouseX;
 let mouseY;
+let keyCode;
 
 let images = [];
 let imagesLoaded = false;
 
 let PI = Math.PI;
 let frameCount = 0;
-
-let keyCode;
 
 window.onload = function() {
     canvas = document.getElementById('canvas');
@@ -88,15 +87,15 @@ function background(color) {
 function font(f) {
     ctx.font = f;
 }
-
 function textAlign(a) {
     ctx.textAlign = a;
 }
-
-function text(text, x , y) {
+function text(text, x, y) {
     ctx.fillText(text, x, y);
 }
-
+function randomRgb() {
+    return rgba(random(0,256),random(0,256),random(0,256));
+}
 function fill(color) {
     ctx.fillStyle = color;
 }
@@ -109,23 +108,19 @@ function ellipse(x, y, r) {
 function rect(x, y, width, height) {
     ctx.fillRect(x, y, width, height);
 }
-function text(text, x, y) {
-    ctx.fillText(text, x, y);
+function strokeRect(x, y, width, height) {
+    ctx.strokeRect(x,y,width,height);
+}
+function lineWidth(x) {
+    ctx.lineWidth=x;
 }
 
-function rgba(r, g, b, a) {
-    r = floor(r);
-    g = floor(g);
-    b = floor(b);
-    if (typeof a === 'undefined') { a = 1; }
-    return "rgba("+r+", "+g+", "+b+", "+a+")";
+function rgba(r, g, b, a = 1) {
+    return "rgba("+floor(r)+", "+floor(g)+", "+floor(b)+", "+a+")";
 }
 
 function hsl(h, s, l) {
-    h = floor(h);
-    s = floor(s);
-    l = floor(l);
-    return "hsl("+h+", "+s+"%, "+l+"%)";
+    return "hsl("+floor(h)+", "+floor(s)+"%, "+floor(l)+"%)";
 }
 
 function lerp(start, end, rate) {
@@ -148,6 +143,7 @@ function pop() { ctx.restore(); }
 function beginShape() { ctx.beginPath(); }
 function vertex(x, y) { ctx.lineTo(x, y); }
 function endShape() { ctx.closePath(); ctx.stroke(); }
+
 function stroke(color) { ctx.strokeStyle = color; }
 
 function mousePressed() {}
@@ -192,4 +188,25 @@ function addEventListeners() {
         mouseX = evt.touches[0].clientX - rect.left - root.scrollLeft;
         mouseY = evt.touches[0].clientY - rect.top - root.scrollTop;
     }
+}
+
+// VECTOR
+
+class Vector {
+    constructor(x = 0, y = 0) {
+        this.x = x;
+        this.y = y;
+    }
+    add(v) {
+        this.x += v.x;
+        this.y += v.y;
+    }
+    set(x, y) {
+        this.x = x;
+        this.y = y;
+    }
+}
+
+function vec(x = 0, y = 0) {
+    return new Vector(x, y);
 }
