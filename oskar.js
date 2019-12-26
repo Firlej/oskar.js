@@ -1,5 +1,4 @@
-// Version 1.0
-// 26-08-2019
+// 12/09/2019
 
 let canvas, ctx;
 
@@ -16,6 +15,26 @@ const HALF_PI = Math.PI / 2;
 const PI = Math.PI;
 const TWO_PI = Math.PI * 2;
 let frameCount = 0;
+
+const KEY = {
+    SPACE: 32,
+    ZERO: 48,
+    ONE: 49,
+    TWO: 50,
+    THREE: 51,
+    FOUR: 52,
+    FIVE: 53,
+    SIX: 54,
+    SEVEN: 55,
+    EIGHT: 56,
+    NINE: 57,
+    W: 119,
+    A: 97,
+    S: 115,
+    D: 100
+};
+
+function setup() {}
 
 window.onload = function () {
     // canvas = document.createElement('canvas');
@@ -38,8 +57,9 @@ window.onload = function () {
 
     setLibValues();
 
-    setup(function () {
-        setInterval(function () {
+    setup(() => {
+        draw();
+        setInterval(() => {
             draw();
             frameCount++;
         }, 1000 / 60);
@@ -296,6 +316,8 @@ function mousePressed() {}
 
 function mouseReleased() {}
 
+function mouseMoved() {}
+
 function windowResized() {}
 
 function keyPressed() {}
@@ -312,7 +334,7 @@ function addEventListeners() {
 
     window.addEventListener('touchstart', function (evt) {
         updateTouchMove(evt)
-        mousePressed();
+        mousePressed(evt);
         evt.preventDefault();
     });
     window.addEventListener('touchend', mouseReleased);
@@ -331,6 +353,7 @@ function addEventListeners() {
         let root = document.documentElement;
         mouseX = evt.clientX - rect.left - root.scrollLeft;
         mouseY = evt.clientY - rect.top - root.scrollTop;
+        mouseMoved(evt);
     }
 
     function updateTouchMove(evt) {
@@ -338,6 +361,7 @@ function addEventListeners() {
         let root = document.documentElement;
         mouseX = evt.touches[0].clientX - rect.left - root.scrollLeft;
         mouseY = evt.touches[0].clientY - rect.top - root.scrollTop;
+        mouseMoved(evt);
     }
 }
 
@@ -429,4 +453,17 @@ function distSq(x1, y1, x2, y2) {
 
 function dist(x1, y1, x2, y2) {
     return Math.sqrt(distSq(x1, y1, x2, y2));
+}
+
+function loadJSON(file, callback) {
+    var xobj = new XMLHttpRequest();
+    xobj.overrideMimeType("application/json");
+    xobj.open('GET', file, true);
+    xobj.onreadystatechange = function () {
+        if (xobj.readyState == 4 && xobj.status == "200") {
+            callback(xobj.responseText);
+        }
+    }
+    xobj.send(null);
+
 }
