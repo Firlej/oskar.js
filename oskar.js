@@ -1,5 +1,3 @@
-// 12/09/2019
-
 let canvas, ctx;
 
 let width, height;
@@ -37,19 +35,11 @@ const KEY = {
 function setup() {}
 
 window.onload = function () {
-    // canvas = document.createElement('canvas');
-    // canvas.id = "canvas";
-    // let gameArea = document.getElementById("gameArea");
-    // gameArea.insertBefore(canvas, gameArea.firstChild);
 
     canvas = document.getElementById('canvas');
     ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.imageSmoothingEnabled = false;
-    // ctx.mozImageSmoothingEnabled = false;
-    // ctx.webkitImageSmoothingEnabled = false;
-    // ctx.msImageSmoothingEnabled = false;
-    // ctx.imageSmoothingEnabled = false;
     // ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.stroke();
 
@@ -133,6 +123,10 @@ function textAlign(a) {
 }
 
 function text(text, x, y) {
+    fillText(text, x, y);
+}
+
+function fillText(text, x, y) {
     ctx.fillText(text, x, y);
 }
 
@@ -143,19 +137,29 @@ function randomRgb() {
 function fill(color) {
     ctx.fillStyle = color;
 }
-
-function ellipse(x, y, r) {
-    ctx.beginPath();
-    ctx.arc(x, y, r, 0, Math.PI * 2, true);
-    ctx.fill();
+function noFill() {
+    ctx.fillStyle = "rgba(0, 0, 0, 0)";
 }
 
-// function ellipse(x, y, rx, ry = rx) {
-//     ctx.beginPath();
-//     // ctx.arc(x, y, r, 0, Math.PI * 2, true);
-//     ctx.ellipse(x, y, rx, ry, 0, 0, 2 * Math.PI);
-//     ctx.stroke();
-// }
+function stroke(color) {
+    ctx.strokeStyle = color;
+}
+
+function strokeStyle(color) {
+    ctx.strokeStyle = color;
+}
+
+function noStroke() {
+    ctx.strokeStyle = "rgba(0, 0, 0, 0)";
+}
+
+function ellipse(x, y, rx, ry = rx) {
+    ctx.beginPath();
+    // ctx.arc(x, y, r, 0, Math.PI * 2, true);
+    ctx.ellipse(x, y, rx, ry, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+}
 
 function rect(x, y, width, height) {
     ctx.fillRect(x, y, width, height);
@@ -180,6 +184,44 @@ function globalAlpha(a = 1) {
     ctx.globalAlpha = a;
 }
 
+function push() {
+    ctx.save()
+};
+
+function rotate(a) {
+    ctx.rotate(a);
+}
+
+function translate(x, y) {
+    ctx.translate(x, y);
+}
+
+function pop() {
+    ctx.restore();
+}
+
+function beginShape() {
+    ctx.beginPath();
+}
+
+function vertex(x, y) {
+    ctx.lineTo(x, y);
+}
+
+function endShape() {
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+}
+
+let loadPixels = () => {
+    return ctx.getImageData(0, 0, width, height);
+}
+
+let setPixels = (imageData) => {
+    ctx.putImageData(imageData, 0, 0);
+}
+
 function rgb(r, g, b) {
     return rgba(r, g, b, 1);
 }
@@ -194,6 +236,95 @@ function hsl(h, s, l) {
 
 function hsla(h, s, l, a = 1) {
     return "hsl(" + floor(h) + ", " + floor(s) + "%, " + floor(l) + "%, " + a + ")";
+}
+
+function lerpColor(a, b, amount) {
+
+    var ah = parseInt(a.replace(/#/g, ''), 16),
+        ar = ah >> 16,
+        ag = ah >> 8 & 0xff,
+        ab = ah & 0xff,
+        bh = parseInt(b.replace(/#/g, ''), 16),
+        br = bh >> 16,
+        bg = bh >> 8 & 0xff,
+        bb = bh & 0xff,
+        rr = ar + amount * (br - ar),
+        rg = ag + amount * (bg - ag),
+        rb = ab + amount * (bb - ab);
+
+    return '#' + ((1 << 24) + (rr << 16) + (rg << 8) + rb | 0).toString(16).slice(1);
+}
+
+function rgbToHsl(r, g, b) {
+    r /= 255, g /= 255, b /= 255;
+    var max = Math.max(r, g, b),
+        min = Math.min(r, g, b);
+    var h, s, l = (max + min) / 2;
+
+    if (max == min) {
+        h = s = 0; // achromatic
+    } else {
+        var d = max - min;
+        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+        switch (max) {
+            case r:
+                h = (g - b) / d + (g < b ? 6 : 0);
+                break;
+            case g:
+                h = (b - r) / d + 2;
+                break;
+            case b:
+                h = (r - g) / d + 4;
+                break;
+        }
+        h /= 6;
+    }
+
+    return [h, s, l];
+}
+
+function hslToRgb(h, s, l) {
+    // Must be fractions of 1
+    s /= 100;
+    l /= 100;
+
+    let c = (1 - Math.abs(2 * l - 1)) * s,
+        x = c * (1 - Math.abs((h / 60) % 2 - 1)),
+        m = l - c / 2,
+        r = 0,
+        g = 0,
+        b = 0;
+
+    if (0 <= h && h < 60) {
+        r = c;
+        g = x;
+        b = 0;
+    } else if (60 <= h && h < 120) {
+        r = x;
+        g = c;
+        b = 0;
+    } else if (120 <= h && h < 180) {
+        r = 0;
+        g = c;
+        b = x;
+    } else if (180 <= h && h < 240) {
+        r = 0;
+        g = x;
+        b = c;
+    } else if (240 <= h && h < 300) {
+        r = x;
+        g = 0;
+        b = c;
+    } else if (300 <= h && h < 360) {
+        r = c;
+        g = 0;
+        b = x;
+    }
+    r = Math.round((r + m) * 255);
+    g = Math.round((g + m) * 255);
+    b = Math.round((b + m) * 255);
+
+    return [r, g, b];
 }
 
 function lerp(start, end, rate) {
@@ -247,6 +378,10 @@ function max(a, b) {
     return a > b ? a : b;
 }
 
+function constrain(n, min, max) {
+    return n > max ? max : n < min ? min : n;
+}
+
 function map(x, fromA, fromB, toA, toB) {
     return (x - fromA) / (fromB - fromA) * (toB - toA) + toA;
 }
@@ -263,42 +398,12 @@ Array.prototype.last = function () {
     return this[this.length - 1];
 }
 
-function push() {
-    ctx.save()
-};
-
-function translate(x, y) {
-    ctx.translate(x, y);
-}
-
-function pop() {
-    ctx.restore();
-}
-
-function beginShape() {
-    ctx.beginPath();
-}
-
-function vertex(x, y) {
-    ctx.lineTo(x, y);
-}
-
-function endShape() {
-    ctx.closePath();
-    ctx.stroke();
-    ctx.fill();
-}
-
-function stroke(color) {
-    ctx.strokeStyle = color;
-}
-
-function noStroke() {
-    ctx.strokeStyle = "rgba(0, 0, 0, 0)";
+function isContained(x, y, x1, y1, x2, y2) {
+    return (x > x1 && x < x2 && y > y1 && y < y2);
 }
 
 function mouseContained(x1, y1, x2, y2) {
-    return (mouseX > x1 && mouseX < x2 && mouseY > y1 && mouseY < y2);
+    return isContained(mouseX, mouseY, x1, y1, x2, y2);
 }
 
 // STORAGE PROTOTYPES
@@ -419,6 +524,12 @@ class Vector {
         return Math.sqrt(this.magSq());
     }
 
+    limit(n) {
+        if (this.mag() > n) {
+            this.setMag(n);
+        }
+    }
+
     normalize() {
         var len = this.mag();
         if (len !== 0) this.mult(1 / len);
@@ -465,5 +576,4 @@ function loadJSON(file, callback) {
         }
     }
     xobj.send(null);
-
 }
